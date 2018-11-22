@@ -62,6 +62,25 @@ const budgetController = (function() {
             // return the new element
             return newItem;
         },
+        // create a public method delete item
+        deleteItem: function(type, id) {
+            let ids, index;
+
+            // create an array with all of the ID number that we have in
+            ids = data.allItems[type].map(function(current) {
+                return current.id;
+            });
+            console.log(ids);
+
+            // retrieve the index of the element
+            index = ids.indexOf(id);
+
+            // delete the element from the array
+            if(index !== -1) {
+                //delete the elem from position index, 1 element
+                data.allItems[type].splice(index, 1)
+            }
+        },
         // create a public method to calculate the budget
         calculateBudget: function() {
 
@@ -114,7 +133,8 @@ const UIController = (function () {
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     };
 
 
@@ -147,6 +167,13 @@ const UIController = (function () {
 
             // insert HTML into the DOM with insertAdjacentHTML
               document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
+        },
+
+        //remove element from DOM
+        deleteListItem: function(selectorID){
+            let el = document.getElementById(selectorID);
+            el.parentNode.removeChild(el);
+
         },
 
         // clear html fields
@@ -204,6 +231,10 @@ const controller = (function (budgetCtrl, UICtrl) {
                 ctrlAddItem();
             }
         });
+
+        // Add event delegation on the container element (parent element)
+        document.querySelector(DOMstr.container).addEventListener('click', ctrlDeleteItem);
+
     };
 
     // update budget
@@ -243,6 +274,28 @@ const controller = (function (budgetCtrl, UICtrl) {
         console.log(inputVal)
     };
 
+    // Target delete element and traversing the DOM until the element with ID
+    const ctrlDeleteItem = function (event) {
+        let itemId, splitId, type, ID;
+        itemId = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if(itemId) {
+
+            // income-1
+            splitId = itemId.split('-');
+            type = splitId[0];
+            ID = parseInt(splitId[1]);
+
+            //1. delete the item from data structure
+            budgetCtrl.deleteItem(type, ID);
+
+            // 2. delete the item from the UI
+            UICtrl.deleteListItem(itemId);
+
+            // 3. Update and show the new budget
+            updateBudget();
+        }
+    };
 
     // create a public initialization function
     return {
