@@ -163,7 +163,7 @@ const UIController = (function () {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
-        addBtn: '.add__btn',
+        inputBtn: '.add__btn',
         incomeContainer: '.income__list',
         expensesContainer: '.expenses__list',
         budgetLabel: '.budget__value',
@@ -198,6 +198,12 @@ const UIController = (function () {
         dec = numSplit[1];
 
         return (type === 'expense' ? '-' : '+') + ' ' + int + '.' + dec;
+    };
+    // made a simple and reusable private method for a nodeList
+    let nodeListForEach = function (list, callback) {
+        for(let i = 0; i < list.length; i++) {
+            callback(list[i], i)
+        }
     };
 
     return {
@@ -269,12 +275,6 @@ const UIController = (function () {
         displayPercentages: function(percentages) {
             let fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
 
-            let nodeListForEach = function (list, callback) {
-                for(let i = 0; i < list.length; i++) {
-                    callback(list[i], i)
-                }
-            };
-
             nodeListForEach(fields, function(current, index) {
                 if(percentages[index] > 0) {
                     current.textContent = percentages[index] + '%';
@@ -296,6 +296,20 @@ const UIController = (function () {
             document.querySelector(DOMstrings.dateLabel).textContent = months[month] + ' ' + year;
 
         },
+        // change color for our inputs
+        changedType: function() {
+            let fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' +
+                DOMstrings.inputDescription + ',' +
+                DOMstrings.inputValue
+            );
+
+            nodeListForEach(fields, function (cur) {
+                cur.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
+        },
         getDOMstrings: function () {
             return DOMstrings;
         }
@@ -315,7 +329,7 @@ const controller = (function (budgetCtrl, UICtrl) {
     const setupEventListener = function () {
 
         //add click event listener
-        document.querySelector(DOMstr.addBtn).addEventListener("click", ctrlAddItem);
+        document.querySelector(DOMstr.inputBtn).addEventListener("click", ctrlAddItem);
 
         // Add keyboard event listener
         document.addEventListener('keypress', function (event) {
@@ -328,6 +342,10 @@ const controller = (function (budgetCtrl, UICtrl) {
 
         // Add event delegation on the container element (parent element)
         document.querySelector(DOMstr.container).addEventListener('click', ctrlDeleteItem);
+
+
+        // add change event
+        document.querySelector(DOMstr.inputType).addEventListener('change', UICtrl.changedType);
 
     };
 
