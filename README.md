@@ -3,4 +3,4 @@ JavaScript:  Practicing with Objects and Functions
 
 This is a coding app from Udemy Course and is helping me to learn and understand how to organize and structure the code using module and functions, and how to create data privacy and encapsulation.
 
-This is a work in progress...
+[Demo](https://adinamatei.github.io/BudgetApp/)
